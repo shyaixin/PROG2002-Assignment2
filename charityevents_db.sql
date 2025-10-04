@@ -18,6 +18,7 @@ CREATE TABLE event (
   currency CHAR(3) DEFAULT 'AUD',
   goal_amount DECIMAL(12,2),
   progress_amount DECIMAL(12,2) DEFAULT 0.00,
+  image_url VARCHAR(255),
   status ENUM('draft','active','suspended','finished') DEFAULT 'draft',
   CONSTRAINT fk_event_ngo FOREIGN KEY (ngo_id) REFERENCES ngo(ngo_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
