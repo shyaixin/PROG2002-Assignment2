@@ -71,20 +71,20 @@ router.get('/categories', (req, res) => {
 
 
 /**
- * GET /api/events/search
+ * Post /api/events/search
  * search filter（date/location/ngo/category）
  */
-router.get('/search', (req, res) => {
+router.post('/search', (req, res) => {
   const {
     date,
     location,
     ngo,
     category
-  } = req.query;
+  } = req.body;
 
   const values = [];
   // exclude suspended
-  let where = ` AND e.status <> 'suspended'`;
+  let where = `e.status <> 'suspended'`;
 
   // between start_date and end_date
   if (date) {

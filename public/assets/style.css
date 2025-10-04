@@ -185,6 +185,29 @@ nav a{
     font-weight:600;
 }
 
+.search-form{
+    border:1px solid #e5e7eb;
+    background:#fff;
+    border-radius:8px;
+    padding:12px;
+    margin:12px 0;
+}
+
+.search-form-label{
+    font-size:13px;
+}
+.search-form-input{
+    padding:6px;
+    border:1px solid #e5e7eb;
+    border-radius:6px
+}
+.search-form-select{
+    padding:6px;
+    border:1px solid #e5e7eb;
+    border-radius:6px;
+    min-width:200px;
+}
+
 
 @media(min-width:720px){
     .grid{
