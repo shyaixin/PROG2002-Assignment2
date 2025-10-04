@@ -111,4 +111,73 @@ router.get('/search', (req, res) => {
   });
 });
 
+/**
+ * GET /api/events/:id
+ * detail data：return event and NGO and register data
+ */
+router.get('/:id', (req, res) => {
+  // event detail sql
+  const detailSql = `
+    SELECT e.*, n.ngo_name, n.hq_location, n.contact_email
+    FROM event e
+    JOIN ngo n ON n.ngo_id = e.ngo_id
+    WHERE e.event_id = ?
+  `
+
+  // query event by id
+  conn.query(detailSql , [req.params.id], (e, events) => {
+    if (e) {
+      console.error(e);
+      res.status(500).send({error: 'Failed to get event'});
+    } else {
+      if (events.length === 0) {
+        return res.status(404).json({ error: 'Event not found' });
+      }
+
+      // get first event
+      const event = events[0]
+      const id = event.id
+
+      // query count and sum(paid/pending/free)
+      conn.query( `
+      SELECT
+        COUNT(*) AS total_regs,
+        SUM(payment_status = 'paid') AS paid_regs,
+        SUM(payment_status = 'pending') AS pending_regs,
+        SUM(payment_status = 'free') AS free_regs
+      FROM registration
+      WHERE event_id = ?
+      `, [id], (e1, regs) => {
+        if (e1) {
+          console.error(e1);
+          res.status(500).send({error: 'Failed to get register information'});
+        } else {
+          // get first result
+          const stat = regs[0] || {
+            total_regs: 0,
+            paid_regs: 0,
+            pending_regs: 0,
+            free_regs: 0
+          };
+          // calculate total revenue estimate
+          const ticketPrice = Number(event.ticket_price || 0);
+          const revenue_estimate = ticketPrice * Number(stat.paid_regs || 0);
+          // return all info
+          res.json({
+            ...event,
+            stats: {
+              total: Number(stat.total_regs || 0),
+              paid: Number(stat.paid_regs || 0),
+              pending: Number(stat.pending_regs || 0),
+              free: Number(stat.free_regs || 0),
+              revenue_estimate
+            }
+          });
+        }
+      });
+    }
+  });
+});
+
+
 module.exports = router
