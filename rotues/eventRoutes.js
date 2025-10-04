@@ -6,7 +6,7 @@ conn.connect();
 const router = express.Router();
 
 /**
- * GET /api/events/home
+ * GET /api/events
  * home data：only show 'active' event (exclude suspended/draft)
  */
 router.get('/', (req, res) => {
@@ -46,6 +46,25 @@ router.get('/', (req, res) => {
           });
         }
       })
+    }
+  })
+});
+
+/**
+ * GET /api/events/categories
+ * get all events categories
+ */
+router.get('/categories', (req, res) => {
+  // events categories sql
+  const categorySql = `SELECT DISTINCT categoryFROM event`;
+
+  // query categories
+  conn.query(categorySql, (e, rows) => {
+    if (e) {
+      console.error(e);
+      res.status(500).send({ error: 'Failed to Query categories' });
+    } else {
+      res.json(rows);
     }
   })
 });
