@@ -17,5 +17,10 @@
     "url": "https://github.com/shyaixin/PROG2002-Assignment2/issues"
   },
   "homepage": "https://github.com/shyaixin/PROG2002-Assignment2#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
+    "mysql2": "^3.15.1"
+  }
 }
