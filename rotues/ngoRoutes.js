@@ -9,7 +9,7 @@ const router = express.Router();
  * GET /api/ngos
  * Used for dropdown filtering：return all NGO
  */
-router.get('/api/ngos', (req, res) => {
+router.get('/', (req, res) => {
   conn.query(
     `SELECT ngo_id, ngo_name, hq_location, contact_email FROM ngo ORDER BY ngo_name ASC`,
     (e, rows) => {

@@ -56,7 +56,7 @@ router.get('/', (req, res) => {
  */
 router.get('/categories', (req, res) => {
   // events categories sql
-  const categorySql = `SELECT DISTINCT categoryFROM event`;
+  const categorySql = `SELECT DISTINCT category FROM event`;
 
   // query categories
   conn.query(categorySql, (e, rows) => {
@@ -105,7 +105,7 @@ router.get('/search', (req, res) => {
   }
 
   // category filter
-  if (category && /^\d+$/.test(category)) {
+  if (category && category.trim()) {
     where += ` AND e.category = ?`;
     values.push(category);
   }
@@ -155,7 +155,7 @@ router.get('/:id', (req, res) => {
 
       // get first event
       const event = events[0]
-      const id = event.id
+      const id = event.event_id
 
       // query count and sum(paid/pending/free)
       conn.query( `
