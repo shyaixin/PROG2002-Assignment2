@@ -50,4 +50,65 @@ router.get('/', (req, res) => {
   })
 });
 
+
+/**
+ * GET /api/events/search
+ * search filter（date/location/ngo/category）
+ */
+router.get('/search', (req, res) => {
+  const {
+    date,
+    location,
+    ngo,
+    category
+  } = req.query;
+
+  const values = [];
+  // exclude suspended
+  let where = ` AND e.status <> 'suspended'`;
+
+  // between start_date and end_date
+  if (date) {
+    where += ` AND ? BETWEEN start_date AND end_date`;
+    values.push(date);
+  }
+
+  // location
+  if (location && location.trim()) {
+    where += ` AND e.location LIKE ?`;
+    values.push(`%${location.trim()}%`);
+  }
+
+  // NGO filter
+  if (ngo && /^\d+$/.test(ngo)) {
+    where += ` AND e.ngo_id = ?`;
+    values.push(parseInt(ngo, 10));
+  }
+
+  // category filter
+  if (category && /^\d+$/.test(category)) {
+    where += ` AND e.category = ?`;
+    values.push(category);
+  }
+
+  // search sql
+  const searchSql = `
+    SELECT e.*, n.ngo_name
+    FROM event e
+    JOIN ngo n ON n.ngo_id = e.ngo_id
+    WHERE ${where}
+    ORDER BY e.start_date ASC
+  `;
+
+  // search events
+  conn.query(searchSql, values, (e, rows) => {
+    if (e) {
+      console.error(e);
+      res.status(500).send({error: 'Failed to Search events'});
+    } else {
+      res.json(rows);
+    }
+  });
+});
+
 module.exports = router
